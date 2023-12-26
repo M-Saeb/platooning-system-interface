@@ -82,8 +82,17 @@ public abstract class AbstractEndpoint implements HttpHandler{
     public String getStringOrThrowException(JSONObject body, String key) throws IOException{
         Object value = this.getValueFromJSONObject(body, key);
         if (!(value instanceof String)){
-            throw new IOException("client Type Must Be String");
+            throw new IOException(key +" Must Be String");
         }
         return (String)value;
+    }
+
+    public double getDoubleOrThrowException(JSONObject body, String key) throws IOException{
+        String value = this.getValueFromJSONObject(body, key).toString();
+        try{
+            return Double.parseDouble(value);
+        } catch (Exception e){
+            throw new IOException(key + " Must Be Number");
+        }
     }
 }
