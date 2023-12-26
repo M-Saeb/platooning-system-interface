@@ -28,24 +28,35 @@ public class Services {
     }
 
     public static String generateMasterVehicleID(){
-        String newId = "MST-" + generateRandomString(10);
+        String newId = "MST_" + generateRandomString(10);
         DataStore.addMasterVehcileId(newId);
         return newId;
     }
 
     public static String generateSlaveVehicleID(){
-        String newId = "SLV-" + generateRandomString(10);
+        String newId = "SLV_" + generateRandomString(10);
         DataStore.addSlaveVehcileId(newId);
         return newId;
     }
 
     public static Trip createTrip(String masterVehicleId) throws Exception{
-        if (!DataStore.mastervehicleIdExist(masterVehicleId)){
+        if (!DataStore.doesMastervehicleIdExist(masterVehicleId)){
             throw new Exception("The masterId " + masterVehicleId + " does not exist");
         }
-        String tripId = "TRIP-" + generateRandomString(10);
+        String tripId = "TRIP_" + generateRandomString(10);
         Trip trip = new Trip(tripId, masterVehicleId);
         DataStore.addTrip(trip);
         return trip;
+    }
+
+    public static void linkSlaveToTrip(String tripId, String slaveVehicleId) throws Exception{
+        if (!DataStore.doesSlavevehicleIdExist(slaveVehicleId)){
+            throw new Exception("The slaveId " + slaveVehicleId + " does not exist");
+        }
+        Trip trip = DataStore.getTrip(tripId);
+        if (trip == null){
+            throw new Exception("The trip " + tripId + " does not exist");
+        }
+        trip.addSlaveVehicle(slaveVehicleId);
     }
 }

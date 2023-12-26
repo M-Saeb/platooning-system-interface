@@ -18,12 +18,12 @@ public class EndpointGenerateID extends AbstractEndpoint{
             return;
         }
         JSONObject requestBody = this.getRequestBodyAsJson(exchange);
-        String clientType = this.getStringOrThrowException(requestBody, "clientType");
-        if (!clientType.equals("master") && !clientType.equals("slave") ){
+        String vehicleType = this.getStringOrThrowException(requestBody, "vehicleType");
+        if (!vehicleType.equals("master") && !vehicleType.equals("slave") ){
             throw new IOException("clientType Value must either be 'master' or 'slave'");
         }
         String newId;
-        if (clientType.equals("master")){
+        if (vehicleType.equals("master")){
             newId = Services.generateMasterVehicleID();
         } else { // slave
             newId = Services.generateSlaveVehicleID();

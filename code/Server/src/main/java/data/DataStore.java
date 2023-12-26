@@ -19,15 +19,33 @@ public class DataStore {
         slaveVehicleIds.add(id);
     }
 
-    public static boolean mastervehicleIdExist(String id){
+    public static boolean doesMastervehicleIdExist(String id){
         return masterVehicleIds.indexOf(id) >= 0;
+    }
+
+    public static boolean doesSlavevehicleIdExist(String id){
+        return slaveVehicleIds.indexOf(id) >= 0;
+    }
+
+    public static Trip getTrip(String tripId){
+        return trips.get(tripId);
+    }
+
+    public static HashMap<String, Trip> getTripsHashMap(){
+        return trips;
     }
 
     public static ArrayList<String> getAllMasterVehicleIds(){
         return masterVehicleIds;
     }
 
+    public static ArrayList<String> getAllSlaveVehicleIds(){
+        return slaveVehicleIds;
+    }
+
     public static void addTrip(Trip trip){
         trips.put(trip.getTripId(), trip);
     }
+
+
 }

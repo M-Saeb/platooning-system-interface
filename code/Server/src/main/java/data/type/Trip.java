@@ -14,6 +14,10 @@ public class Trip {
         this.masterVehicleId = masterVehicleId;
     }
 
+    public ArrayList<String> getSlaveVehicleIds(){
+        return this.slaveVehicleIds;
+    }
+
     public String getTripId(){
         return this.tripId;
     }

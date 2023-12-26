@@ -25,7 +25,8 @@ public class Main {
         server.createContext("/generate-id", new EndpointGenerateID());
         server.createContext("/get-id", new EndpointGetAllMasters());
         server.createContext("/create-trip", new EndpointCreateTrip());
-        // server.setExecutor(0);
+        server.createContext("/link-to-trip", new LinkToTrip());
+
         server.start();
         System.out.println(" Server started on port 8001");
     }
