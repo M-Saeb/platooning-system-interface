@@ -1,4 +1,4 @@
-package endpoint;
+package endpoint.abstractEndpoint;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -69,4 +69,21 @@ public abstract class AbstractEndpoint implements HttpHandler{
         os.close();
     }
 
+    private Object getValueFromJSONObject(JSONObject body, String key) throws IOException{
+        Object value;
+        try{
+            value = body.get(key);
+        } catch(JSONException e ){
+            throw new IOException(key + " key is not present");
+        }        
+        return value;
+    }
+
+    public String getStringOrThrowException(JSONObject body, String key) throws IOException{
+        Object value = this.getValueFromJSONObject(body, key);
+        if (!(value instanceof String)){
+            throw new IOException("client Type Must Be String");
+        }
+        return (String)value;
+    }
 }

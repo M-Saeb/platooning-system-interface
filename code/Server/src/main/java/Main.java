@@ -1,5 +1,7 @@
 import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
+
+import endpoint.*;
+
 import java.net.InetSocketAddress;
 import java.io.IOException;
 // import java.util.concurrent.ThreadPoolExecutor;
@@ -21,6 +23,8 @@ public class Main {
         // server.setExecutor(threadPoolExecutor);
         
         server.createContext("/generate-id", new EndpointGenerateID());
+        server.createContext("/get-id", new EndpointGetAllMasters());
+        server.createContext("/create-trip", new EndpointCreateTrip());
         // server.setExecutor(0);
         server.start();
         System.out.println(" Server started on port 8001");
