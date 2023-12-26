@@ -7,7 +7,7 @@ import endpoint.abstractEndpoint.AbstractEndpoint;
 import services.Services;
 
 
-public class LinkToTrip extends AbstractEndpoint{
+public class EndpointEndTrip extends AbstractEndpoint{
 
     @Override
     public void handleRequest(HttpExchange exchange) throws Exception {
@@ -19,8 +19,7 @@ public class LinkToTrip extends AbstractEndpoint{
         }
         JSONObject requestBody = this.getRequestBodyAsJson(exchange);
         String tripId = this.getStringOrThrowException(requestBody, "tripId");
-        String slaveId = this.getStringOrThrowException(requestBody, "slaveId");
-        Services.linkSlaveToTrip(tripId, slaveId);
+        Services.setTripToDone(tripId);;
         JSONObject response = new JSONObject();
         response.put("result", true);
         this.sendResponse(exchange, 200, response.toString());

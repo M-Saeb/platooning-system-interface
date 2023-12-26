@@ -1,5 +1,7 @@
 ### Messaging Format
 
+One possible way to apply pthreads is by making 2 HTTP servers (one for master and one for slave)
+
 the default template for the request is:
 ```json
 {
@@ -152,19 +154,6 @@ the response is
             [22.000, 11.333],
             [21.000, 11.333],
         ]
-    }
-    ```
-
-- **slaveConnectionIsLostSignal**
-    - **This actions is not callable, only receivable !!**
-    - When a slave machine is no longer reachable by the server, this signal is sent to the master vehicle
-    - It sends a response with the string for the lost vehicle ID
-    reponse 
-    ```json
-    {
-        "action": "slaveConnectionIsLostSignal",
-        // The ID of the lost slave vahicle
-        "result": "AABBCCDD"
     }
     ```
 

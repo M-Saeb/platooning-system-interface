@@ -1,9 +1,11 @@
 import java.io.IOException;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.json.JSONObject;
+import org.json.JSONArray;
 import org.junit.jupiter.api.Test;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
@@ -19,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import data.DataStore;
+import data.type.Location;
 import data.type.Trip;
 import services.Services;
 
@@ -126,15 +129,102 @@ public class TestApi {
 
 
         HashMap<String, Trip> allTrips = DataStore.getTripsHashMap();
-        assertEquals(allTrips.size(), 1, "Should create only one mater");
+        assertEquals(allTrips.size(), 1, "Should create only one trip");
         Trip responseTrip = (Trip)allTrips.values().toArray()[0];
         
         assertEquals(responseTrip.getSlaveVehicleIds().size(), 1);
         assertEquals(responseTrip.getSlaveVehicleIds().get(0), slaveId);
+    }
 
+    @Test
+    public void testSettingTripToDone() throws Exception{
+        Main.main(null);
+
+        String masterId = Services.generateMasterVehicleID();
+        Trip requestTrip = Services.createTrip(masterId);
+        JSONObject body = new JSONObject()
+            .put("tripId", requestTrip.getTripId());
+
+        HttpPost request = setupHttpPost("end-trip", body);
+        HttpResponse response = httpClient.execute(request);
+
+        assertSuccessfullResponse(response);
+
+        JSONObject responseOject = getBodyFromResponse(response);
+        boolean responseValue = (boolean)responseOject.get("result");
+        assertTrue(responseValue);
+
+
+        HashMap<String, Trip> allTrips = DataStore.getTripsHashMap();
+        assertEquals(allTrips.size(), 1, "Should have only one trip");
+        Trip responseTrip = (Trip)allTrips.values().toArray()[0];
+        
+        assertTrue(responseTrip.isIsDone());
     }
 
 
+    @Test
+    public void testUpdateMasterLocation() throws Exception{
+        Main.main(null);
+
+        String masterId = Services.generateMasterVehicleID();
+        Trip requestTrip = Services.createTrip(masterId);
+        JSONObject body = new JSONObject()
+            .put("tripId", requestTrip.getTripId())
+            .put("longitude", 11.111)
+            .put("latitude", 22.222);
+
+        HttpPost request = setupHttpPost("update-master-location", body);
+        HttpResponse response = httpClient.execute(request);
+
+        assertSuccessfullResponse(response);
+
+        JSONObject responseOject = getBodyFromResponse(response);
+        boolean responseValue = (boolean)responseOject.get("result");
+        assertTrue(responseValue);
+
+
+        HashMap<String, Trip> allTrips = DataStore.getTripsHashMap();
+        assertEquals(allTrips.size(), 1, "Should have only one trip");
+        Trip responseTrip = (Trip)allTrips.values().toArray()[0];
+        ArrayList<Location> path = responseTrip.getFulltripPath();
+        assertEquals(path.size(), 1, "There should be only 1 point in the path now");
+        assertEquals(path.get(0).longitude, 11.111);
+        assertEquals(path.get(0).latitude, 22.222);
+    }
+
+    @Test
+    public void testGetMasterPath() throws Exception{
+        Main.main(null);
+
+        String masterId = Services.generateMasterVehicleID();
+        Trip requestTrip = Services.createTrip(masterId);
+        requestTrip.addLocationToTrip(
+            new Location(11.111, 22.222)
+        );
+        JSONObject body = new JSONObject()
+            .put("tripId", requestTrip.getTripId());
+
+        HttpPost request = setupHttpPost("get-master-location", body);
+        HttpResponse response = httpClient.execute(request);
+
+        assertSuccessfullResponse(response);
+
+        JSONObject responseOject = getBodyFromResponse(response);
+        Object responseValue = responseOject.get("result");
+        if (!(responseValue instanceof JSONArray)){
+            throw new Exception("The response should've been an array");
+        }
+        List listResponseValue = ((JSONArray)responseValue).toList();
+        assertEquals(listResponseValue.size(), 1);
+        HashMap responseValueItem = (HashMap)listResponseValue.get(0);
+        assertEquals(
+            responseValueItem.get("longitude").toString(), "11.111"
+        );
+        assertEquals(
+            responseValueItem.get("latitude").toString(), "22.222"
+        );
+    }
 
     private void assertSuccessfullResponse(HttpResponse response){
         int statusCode = response.getStatusLine().getStatusCode();

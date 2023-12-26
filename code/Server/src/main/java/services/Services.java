@@ -3,6 +3,7 @@ package services;
 import java.util.ArrayList;
 import java.security.SecureRandom;
 import data.DataStore;
+import data.type.Location;
 import data.type.Trip;
 
 public class Services {
@@ -59,4 +60,29 @@ public class Services {
         }
         trip.addSlaveVehicle(slaveVehicleId);
     }
+
+    public static void setTripToDone(String tripId) throws Exception{
+        Trip trip = DataStore.getTrip(tripId);
+        if (trip == null){
+            throw new Exception("The trip " + tripId + " does not exist");
+        }
+        trip.setToDone();
+    }
+
+    public static void updateLocationOnTrip(String tripId, Location location) throws Exception{
+        Trip trip = DataStore.getTrip(tripId);
+        if (trip == null){
+            throw new Exception("The trip " + tripId + " does not exist");
+        }
+        trip.addLocationToTrip(location);
+    }
+
+    public static ArrayList<Location> getMasterPath(String tripId) throws Exception{
+        Trip trip = DataStore.getTrip(tripId);
+        if (trip == null){
+            throw new Exception("The trip " + tripId + " does not exist");
+        }
+        return trip.getFulltripPath();
+    }
+
 }
