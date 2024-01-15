@@ -3,12 +3,15 @@
 
 #include <iostream> 
 #include <random>
+#include <spdlog/spdlog.h>
 #include "vehicle.h"
 #include "../point.h"
 
 class MasterVehicle: public Vehicle{
 public:
-    MasterVehicle(std::string number): Vehicle(number){}
+    MasterVehicle(std::string number): Vehicle(number){
+        commonInit();
+    }
     ~MasterVehicle() override;
 
     Point getMasterLocation(){
@@ -26,6 +29,12 @@ public:
         Point point(longitude, latitude);
         return point;
     }
+
+private:
+    void commonInit(){
+        logger->info("Initialized master vehicle numbered {}", number);
+    }
+
 };
 
 #endif

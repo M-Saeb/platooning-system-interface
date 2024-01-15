@@ -4,10 +4,11 @@
 #include <iostream> 
 #include <vector>
 #include "../trip/trip.h"
+#include "../abstract/abstractLogger.h"
 
-class Server{
+class Server: public AbstractLogger{
 public:
-    Server(){}
+    Server(): AbstractLogger("Server"){}
 
     // Declare the destructor
     ~Server();

@@ -3,13 +3,14 @@
 
 #include <iostream> 
 #include <string>
+#include "../abstract/abstractLogger.h"
 
-class Vehicle {
+class Vehicle : public AbstractLogger{
 public:
     std::string number;
 
     // Constructor
-    Vehicle(std::string number): number(number){}
+    Vehicle(std::string number): number(number), AbstractLogger(number){}
 
     // Virtual destructor (important for polymorphism)
     virtual ~Vehicle();

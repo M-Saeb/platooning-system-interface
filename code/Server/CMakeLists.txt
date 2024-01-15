@@ -9,6 +9,7 @@ project(MyProject)
 
 add_executable(
     my_executable main.cpp
+    common/abstract/abstractLogger.cpp
     common/point.cpp
     common/vehicles/vehicle.cpp
     common/vehicles/MasterVehicle.cpp

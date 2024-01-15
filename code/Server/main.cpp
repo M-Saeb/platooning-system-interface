@@ -1,44 +1,26 @@
 #include <iostream> 
 #include <spdlog/spdlog.h>
-#include <pthread.h>
+#include <windows.h>
+#include <thread>
+
 #include "common/vehicles/masterVechicle.h"
 #include "common/vehicles/slaveVehicle.h"
 #include "common/server/server.h"
 
 using namespace std;
 
-/* 
-void *test_process(void *args){
-    int i = 0;
-    for (int j=0; j < 1000; j++){
-        cout << "T" << i << "\n";
-        i ++;
-    }
-}
-
-void *run_process(void *args){
-    int i = 0;
-    for (int j=0; j < 1000; j++){
-        cout << "R" << i << "\n";
-        i ++;
-    }
-}
-*/
 
 int main() { 
-    // pthread_t thread_1, thread_2;
-    // pthread_create(&thread_1, NULL, test_process, NULL);
-    // pthread_create(&thread_2, NULL, run_process, NULL);
-    // pthread_join(thread_1, NULL);
-    // pthread_join(thread_2, NULL);
-
-    Server server();
-    MasterVehicle master("M01");
-    SlaveVehicle slave1("SL001"), slave2("SL002");
+    Server server;
+    MasterVehicle master("MSTR_001");
+    SlaveVehicle slave1("SLVE_001"), slave2("SLVE_002");
     Trip trip("TRIP_001", master);
+    trip.addSlave(slave1);
+    trip.addSlave(slave2);
+    trip.startTrip();
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+    trip.endTrip();
 
-
-    spdlog::info("New welcome to spdlog! ");
 
     return 0; 
 }
