@@ -7,12 +7,14 @@
 
 class AbstractLogger {
 public:
+    AbstractLogger(){}
+
     AbstractLogger(const std::string& loggerName) {
         // Create a logger with a console sink
         logger = std::make_shared<spdlog::logger>(loggerName, std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
         
         // Set the log pattern (customize as needed)
-        logger->set_pattern("[%Y-%m-%d %H:%M:%S:%e] [%^%l%$] [%n] [%t] %v");
+        logger->set_pattern("[%Y-%m-%d %H:%M:%S:%e] [%^%l%$] [%t] [%n] %v");
     }
 
     virtual ~AbstractLogger() = default;

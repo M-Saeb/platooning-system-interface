@@ -5,13 +5,17 @@
 #include <vector>
 #include <thread>
 #include <random>
+#include <iomanip>
+#include <sstream>
+#include <unordered_map>
 #include <windows.h>
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_color_sinks.h>
-#include "../vehicles/masterVechicle.h"
-#include "../vehicles/slaveVehicle.h"
-#include "../point.h"
 #include "../abstract/abstractLogger.h"
+#include "../slaveInterface/slaveInterface.h"
+#include "../masterInterface/masterInterface.h"
+#include "../point/point.h"
+#include "../util/utils.h"
+
+using namespace std;
 
 enum class State{
     INIT,
@@ -19,26 +23,27 @@ enum class State{
     DONE
 };
 
+
+
 class Trip: AbstractLogger{
 public:
     // Declare the destructor
+    Trip():
+        number("NOVALUE"),
+        AbstractLogger("NULL_TRIP")
+        {
+            commonInit();
+        }
+
     ~Trip();
 
-    Trip(std::string number):
+    Trip(string number, MasterInterface masterInt):
         number(number),
-        master(NULL),
+        master(masterInt),
         AbstractLogger(number)
-    {
-        commonInit();
-    }
-
-    Trip(std::string number, MasterVehicle master):
-        number(number),
-        master(master),
-        AbstractLogger(number)
-    {
-        commonInit();
-    }
+        {
+            commonInit();
+        }
 
     Trip(const Trip& other) :
         state(other.state),
@@ -50,7 +55,8 @@ public:
         commonInit(); // You may need to adjust this based on your specific needs
     }
 
-    // Copy assignment operator
+    static Trip createTrip(string masterId);
+
     Trip& operator=(const Trip& other) {
         if (this != &other) {
             // Release resources if needed
@@ -68,57 +74,70 @@ public:
         return *this;
     }
 
-    void addSlave(SlaveVehicle &slave){
-        logger->info("added slave numbered {}", slave.number);
+    string getNumber(){
+        return number;
+    }
+
+    void addSlave(string slaveId){
+        SlaveInterface slave(slaveId);
         slaves.push_back(slave);
+        logger->info("added slave numbered {}", slave.getNumber());
     }
 
     void startTrip(){
         state = State::IN_PROGRESS;
-        std::thread locationThread(&Trip::theMasterLocationThread, this);
-        getMasterLocationThread = std::move(locationThread);
         logger->info("Trip started !");
+        for(SlaveInterface& slave: slaves){
+            slave.startThread();
+        }
     }
 
     void endTrip(){
         state = State::DONE;
-        getMasterLocationThread.join();
         logger->info("Trip ended.");
+        for(SlaveInterface& slave: slaves){
+            slave.endThread();
+        }
     }
 
     Point updateMasterLocation(){
-        Point point(master.getMasterLocation());
+        Point point(master.getLocation());
         logger->info("got new location {}, {}", point.longitude, point.latitude);
         masterLocationHistory.push_back(point);
         return point;
     }
 
-    std::vector<Point> getMasterPath(){
+    vector<Point> getMasterPath(){
         return masterLocationHistory;
     }
 
 private:
     State state;
-    std::string number;
-    MasterVehicle master;
-    std::vector<SlaveVehicle> slaves;
-    std::vector<Point> masterLocationHistory;
-    std::thread getMasterLocationThread;
+    string number;
+    MasterInterface master;
+    vector<SlaveInterface> slaves;
+    vector<Point> masterLocationHistory;
+    unordered_map<
+        string,
+        vector<Point>
+    > trips;
+
+    thread getMasterLocationThread;
 
     void commonInit(){
         state = State::INIT;
         logger->info("Initialized Trip {}", number);
     }
 
-    static void theMasterLocationThread(Trip* trip){
-        trip->logger->info("started runMasterLocationThread", trip->number);
+    // static void theMasterLocationThread(Trip* trip){
+    //     trip->logger->info("started runMasterLocationThread", trip->number);
 
-        while(trip->state == State::IN_PROGRESS){
-            trip->updateMasterLocation();
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-        trip->logger->info("ended runMasterLocationThread", trip->number);
-    }
+    //     while(trip->state == State::IN_PROGRESS){
+    //         trip->updateMasterLocation();
+    //         this_thread::sleep_for(chrono::seconds(1));
+    //     }
+    //     trip->logger->info("ended runMasterLocationThread", trip->number);
+    // }
 
 };
 

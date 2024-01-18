@@ -9,13 +9,13 @@ project(MyProject)
 
 add_executable(
     my_executable main.cpp
-    common/abstract/abstractLogger.cpp
-    common/point.cpp
-    common/vehicles/vehicle.cpp
-    common/vehicles/MasterVehicle.cpp
-    common/vehicles/SlaveVehicle.cpp
-    common/trip/trip.cpp
     common/server/server.cpp
+    common/trip/trip.cpp
+    common/slaveInterface/slaveInterface.cpp
+    common/masterInterface/masterInterface.cpp
+    common/abstract/abstractLogger.cpp
+    common/point/point.cpp
+    common/util/utils.cpp
 )
 
 # spdlog

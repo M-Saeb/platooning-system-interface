@@ -1,7 +1,7 @@
 #include <iostream> 
-#include "slaveVehicle.h"
+#include "slaveInterface.h"
 
-SlaveVehicle::~SlaveVehicle() {
+SlaveInterface::~SlaveInterface() {
     // Destructor implementation
     // (If there are any resources to be released, this is the place to do it)
 }

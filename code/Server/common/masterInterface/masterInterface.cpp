@@ -1,7 +1,7 @@
 #include <iostream> 
-#include "vehicle.h"
+#include "masterInterface.h"
 
-Vehicle::~Vehicle() {
+MasterInterface::~MasterInterface() {
     // Destructor implementation
     // (If there are any resources to be released, this is the place to do it)
 }
