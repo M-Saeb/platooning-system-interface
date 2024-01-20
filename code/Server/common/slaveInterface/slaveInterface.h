@@ -5,21 +5,22 @@
 #include <memory>
 #include <thread> 
 #include <mutex> 
-#include <atomic>
 #include <windows.h>
 
-#include "../point/point.h"
 #include "../abstract/abstractLogger.h"
+#include "../point/point.h"
+#include "../masterInterface/masterInterface.h"
 
 using namespace std;
 
 class SlaveInterface: AbstractLogger{
 public:
     SlaveInterface(
-        string number
+        string number,
+        shared_ptr<MasterInterface> masterInt
     ):
         number(number),
-        masterLocation(make_shared<Point>()),
+        masterInterface(masterInt),
         slaveLocation(make_shared<Point>()),
         pathToMaster(make_shared<vector<Point>>()),
         AbstractLogger(number)
@@ -29,11 +30,11 @@ public:
 
     SlaveInterface(
         string number,
-        Point initMasterLocation,
+        MasterInterface masterInt,
         Point initSlaveLocation
     ):
         number(number),
-        masterLocation(make_shared<Point>(initMasterLocation)),
+        masterInterface(make_shared<MasterInterface>(masterInt)),
         slaveLocation(make_shared<Point>(initSlaveLocation)),
         pathToMaster(make_shared<vector<Point>>()),
         AbstractLogger(number)
@@ -43,7 +44,9 @@ public:
 
     SlaveInterface(const SlaveInterface& other) :
         number(other.number),
-        masterLocation(make_shared<Point>(other.getMasterLocation())),
+        masterInterface(
+            make_shared<MasterInterface>(other.getMasterInterface())
+        ),
         slaveLocation(make_shared<Point>(other.getSlaveLocation())),
         pathToMaster(make_shared<vector<Point>>(other.getCurrentPathToMaster())),
         runThreadFlag(other.runThreadFlag.load()),
@@ -54,7 +57,7 @@ public:
         if (this != &other) {
             // Custom copy assignment logic here
             number = other.number;
-            masterLocation = make_shared<Point>(other.getMasterLocation());
+            masterInterface = make_shared<MasterInterface>(other.getMasterInterface());
             slaveLocation = make_shared<Point>(other.getSlaveLocation());
             pathToMaster = make_shared<vector<Point>>(other.getCurrentPathToMaster());
             runThreadFlag.store(other.runThreadFlag.load());
@@ -63,12 +66,6 @@ public:
     }
 
     virtual ~SlaveInterface();
-
-    void updateMasterLocation(Point newLocation){
-        Point currentLocation = *masterLocation;
-        logger->info("Updated master location");
-        *masterLocation = newLocation;
-    }
 
     void updateSlaveLocation(Point newLocation){
         Point currentLocation = *slaveLocation;
@@ -109,8 +106,12 @@ public:
         return number;
     }
 
+    MasterInterface getMasterInterface() const {
+        return *masterInterface;
+    }
+
     Point getMasterLocation() const {
-        return *masterLocation;
+        return masterInterface->getLocation();
     }
 
     Point getSlaveLocation() const {
@@ -123,7 +124,7 @@ public:
 
 private:
     string number;
-    shared_ptr<Point> masterLocation;
+    shared_ptr<MasterInterface> masterInterface;
     shared_ptr<Point> slaveLocation;
     shared_ptr<vector<Point>> pathToMaster;
     atomic<bool> runThreadFlag = false;

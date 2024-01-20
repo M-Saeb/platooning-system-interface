@@ -12,21 +12,18 @@ SlaveInterface::~SlaveInterface() {
 }
 
 void SlaveInterface::slaveToMasterThread() {
-    logger->info("Started slaveToMasterThread thread");
-
     Point currentMasterLocation = getMasterLocation();
     Point currentSlaveLocation = getSlaveLocation();
-
+    logger->info("Started slaveToMasterThread thread");
     while (isThreadRunning()) {
         if (getMasterLocation() != currentMasterLocation) {
             
-            logger->info("Detected new master location");
+            logger->info("--> Detected new master location <--");
             currentMasterLocation = getMasterLocation();
             addPointToPath(currentMasterLocation);
-            logger->info("size is {}", getCurrentPathToMaster().size());
         }
         if (getSlaveLocation() != currentSlaveLocation) {
-            logger->info("Detected slave location update");
+            logger->info("Detected new slave location");
             currentSlaveLocation = getSlaveLocation();
             popPointFromPath();
         }

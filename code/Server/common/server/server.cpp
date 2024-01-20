@@ -14,7 +14,7 @@ Server::~Server() {
 
 string Server::createTrip(string masterId){
     string tripNumber = "TRIP_" + generateNumber();
-    MasterInterface master(masterId);
+    shared_ptr<MasterInterface> master = make_shared<MasterInterface>(masterId);
     Trip newTrip(tripNumber, master);
     trips[tripNumber] = make_unique<Trip>(newTrip);
     logger->info("Linked master {} with trip {}", masterId, tripNumber);
@@ -57,9 +57,6 @@ void Server::updateMasterLocation(
     trip->validateMasterId(masterId);
     auto& master = trip->getMaster();
     master.setLocation(p);
-    for(auto& slave: trip->getSlaves()){
-        slave.updateMasterLocation(p);
-    }
 }
 
 vector<Point> Server::getSlaveToMasterLocation(

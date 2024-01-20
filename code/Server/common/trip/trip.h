@@ -24,13 +24,12 @@ enum class State{
 };
 
 
-
 class Trip: AbstractLogger{
 public:
 
     ~Trip();
 
-    Trip(string n, MasterInterface masterInt):
+    Trip(string n, shared_ptr<MasterInterface> masterInt):
         number(n),
         master(masterInt),
         AbstractLogger(n)
@@ -60,13 +59,13 @@ public:
         return number;
     }
 
-    MasterInterface& getMaster(){
-        return master;
+    MasterInterface getMaster(){
+        return *master;
     }
 
     void validateMasterId(string masterId){
-        if (masterId != master.getNumber()){
-            logger->error("The masterId {} does not match the existing one {}", masterId, master.getNumber());
+        if (masterId != master->getNumber()){
+            logger->error("The masterId {} does not match the existing one {}", masterId, master->getNumber());
         }
     }
 
@@ -80,7 +79,7 @@ public:
     }
 
     void addSlave(string slaveId){
-        SlaveInterface slave(slaveId);
+        SlaveInterface slave(slaveId, master);
         slaves.push_back(slave);
         logger->info("added slave numbered {}", slave.getNumber());
     }
@@ -114,12 +113,13 @@ public:
         for (auto slave: slaves){
             return slave.getCurrentPathToMaster();
         }
+        logger->error("No slave id {} was found", slaveId);
     }
 
 private:
     State state;
     string number;
-    MasterInterface master;
+    shared_ptr<MasterInterface> master;
     vector<SlaveInterface> slaves;
     vector<Point> masterLocationHistory;
     thread getMasterLocationThread;

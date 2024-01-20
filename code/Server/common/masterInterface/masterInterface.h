@@ -2,6 +2,7 @@
 #define MASTER_INTERFACE_H
 
 #include <iostream> 
+#include <memory>
 #include <thread> 
 #include "../abstract/abstractLogger.h"
 #include "../point/point.h"
@@ -10,17 +11,18 @@ using namespace std;
 
 class MasterInterface: AbstractLogger{
 public:
-    // MasterInterface():
-    //     number(""),
-    //     AbstractLogger("NO_NUMBER")
-    //     {
-    //         commonInit();
-    //     }
+    MasterInterface():
+        number(""),
+        _isNull(true),
+        AbstractLogger("NULL_MASTER")
+        {
+            commonInit();
+        }
 
 
     MasterInterface(string number):
         number(number),
-        masterLocation(0.0, 0.0),
+        masterLocation( make_shared<Point>(0.0, 0.0)),
         AbstractLogger(number)
         {
             commonInit();
@@ -41,21 +43,23 @@ public:
     }
 
     Point getLocation(){
-        return masterLocation;
+        return *masterLocation;
     }
 
     void setLocation(Point p){
+        Point oldLocation = *masterLocation;
         logger->info(
             "Updated location from {} to {}",
-            masterLocation.toString(),
+            oldLocation.toString(),
             p.toString()
         );
-        masterLocation = p;
+        *masterLocation = p;
     }
 
 private:
     string number;
-    Point masterLocation;
+    shared_ptr<Point> masterLocation;
+    bool _isNull = false;
 
     void commonInit(){
         logger->info("Initialized Master Interface {}", number);

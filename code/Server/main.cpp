@@ -15,20 +15,19 @@ int main() {
     server.linkSlaveToTrip(tripNumber, slaveId1);
     server.linkSlaveToTrip(tripNumber, slaveId2);
     server.startTrip(tripNumber);
+    this_thread::sleep_for(chrono::seconds(1));
     server.updateMasterLocation(
         tripNumber, masterId, Point(11.11, 22.22)
     );
-    this_thread::sleep_for(chrono::seconds(1));
-
     server.updateMasterLocation(
         tripNumber, masterId, Point(33.33, 44.44)
     );
     vector<Point> path = server.getSlaveToMasterLocation(
         tripNumber, masterId, slaveId1
     );
-    cout << "\n => " << path.size() << "\n";
+    server.logger->info("Size is {}", path.size());
     for (auto p: path){
-        cout << "\n ===> " << p.toString() << "\n";
+        server.logger->info("===> Item is  {}", p.toString());
     }
     this_thread::sleep_for(chrono::seconds(1));
     server.endTrip(tripNumber);
