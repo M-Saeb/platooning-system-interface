@@ -1,6 +1,7 @@
 #include <iostream> 
 #include "server.h"
 #include "../trip/trip.h"
+#include "../point/point.h"
 #include "../masterInterface/masterInterface.h"
 #include "../slaveInterface/slaveInterface.h"
 
@@ -15,37 +16,56 @@ string Server::createTrip(string masterId){
     string tripNumber = "TRIP_" + generateNumber();
     MasterInterface master(masterId);
     Trip newTrip(tripNumber, master);
-    trips[tripNumber] = newTrip;
-    logger->info("Added trip {} with master {}", tripNumber, masterId);
+    trips[tripNumber] = make_unique<Trip>(newTrip);
+    logger->info("Linked master {} with trip {}", masterId, tripNumber);
     return tripNumber;
 }
 
 void Server::linkSlaveToTrip(string tripNumber, string slaveId){
-    Trip &trip = trips[tripNumber];
-    trip.addSlave(slaveId);
-    logger->info("Linked slave {} to trip number {}", slaveId, tripNumber);
+    auto trip = trips[tripNumber].get();
+    trip->addSlave(slaveId);
 }
 
 void Server::startTrip(string tripNumber){
-    Trip &trip = trips[tripNumber];
-    trip.startTrip();
+    auto trip = trips[tripNumber].get();
+    trip->startTrip();
 }
 
 void Server::endTrip(string tripNumber){
-    Trip &trip = trips[tripNumber];
-    trip.endTrip();
+    auto trip = trips[tripNumber].get();
+    trip->endTrip();
 }
 
 void Server::sendStopSignalToMaster(string tripNumber){
-    Trip& trip = trips[tripNumber];
+    auto trip = trips[tripNumber].get();
     logger->info("Received stop signal for trip {}", tripNumber);
-    // trip.sendStopSignalToMaster();
+    // trip->sendStopSignalToMaster();
 }
 
 void Server::receiveEndTripSignal(string tripNumber){
     logger->info("Received end trip signal for trip {}", tripNumber);
-    Trip& trip = trips[tripNumber];
-    trip.endTrip();
+    auto trip = trips[tripNumber].get();
+    trip->endTrip();
     logger->info("Trip {} ended", tripNumber);
 
+}
+
+void Server::updateMasterLocation(
+    string tripNumber, string masterId, Point p
+){
+    auto trip = trips[tripNumber].get();
+    trip->validateMasterId(masterId);
+    auto& master = trip->getMaster();
+    master.setLocation(p);
+    for(auto& slave: trip->getSlaves()){
+        slave.updateMasterLocation(p);
+    }
+}
+
+vector<Point> Server::getSlaveToMasterLocation(
+    string tripNumber, string masterId, string slaveId
+){
+    auto trip = trips[tripNumber].get();
+    trip->validateMasterId(masterId);
+    return trip->getSlaveToMasterPath(slaveId);
 }

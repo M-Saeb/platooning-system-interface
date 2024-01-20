@@ -13,12 +13,15 @@
 
 using namespace std;
 
+class Point;
 class MasterInterface;
 class SlaveInterface;
 
 class Server: public AbstractLogger{
 public:
-    Server(): AbstractLogger("_SERVER_"){}
+    Server(): AbstractLogger("_SERVER_"){
+        commmonInit();
+    }
 
     ~Server();
 
@@ -28,9 +31,16 @@ public:
     void endTrip(string tripNumber);
     void sendStopSignalToMaster(string tripNumber);    
     void receiveEndTripSignal(string tripNumber);
+    void updateMasterLocation(string tripNumber, string masterId, Point p);
+    vector<Point> getSlaveToMasterLocation(string tripNumber, string masterId, string slaveId);
 
 private:
-    unordered_map<string, Trip> trips;
+    unordered_map<string, unique_ptr<Trip>> trips;
+
+    void commmonInit(){
+        logger->info("Initialized Server Interface");
+    }
+
 
 };
 

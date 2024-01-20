@@ -27,20 +27,13 @@ enum class State{
 
 class Trip: AbstractLogger{
 public:
-    // Declare the destructor
-    Trip():
-        number("NOVALUE"),
-        AbstractLogger("NULL_TRIP")
-        {
-            commonInit();
-        }
 
     ~Trip();
 
-    Trip(string number, MasterInterface masterInt):
-        number(number),
+    Trip(string n, MasterInterface masterInt):
+        number(n),
         master(masterInt),
-        AbstractLogger(number)
+        AbstractLogger(n)
         {
             commonInit();
         }
@@ -51,31 +44,39 @@ public:
         master(other.master),
         slaves(other.slaves),
         masterLocationHistory(other.masterLocationHistory),
-        AbstractLogger(number){
-        commonInit(); // You may need to adjust this based on your specific needs
-    }
-
-    static Trip createTrip(string masterId);
+        AbstractLogger(other.number){
+        }
 
     Trip& operator=(const Trip& other) {
-        if (this != &other) {
-            // Release resources if needed
-            // ...
-
-            // Copy member variables
-            state = other.state;
-            number = other.number;
-            master = other.master;
-            slaves = other.slaves;
-            masterLocationHistory = other.masterLocationHistory;
-
-            commonInit(); // You may need to adjust this based on your specific needs
-        }
+        state = other.state;
+        number = other.number;
+        master = other.master;
+        slaves = other.slaves;
+        masterLocationHistory = other.masterLocationHistory;
         return *this;
     }
 
     string getNumber(){
         return number;
+    }
+
+    MasterInterface& getMaster(){
+        return master;
+    }
+
+    void validateMasterId(string masterId){
+        if (masterId != master.getNumber()){
+            logger->error("The masterId {} does not match the existing one {}", masterId, master.getNumber());
+        }
+    }
+
+    void validateSlaveId(string slaveId){
+        for (auto slave: slaves){
+            if (slave.getNumber() == slaveId){
+                return;
+            }
+        }
+        logger->error("The slave ID {} is not valid", slaveId);
     }
 
     void addSlave(string slaveId){
@@ -100,15 +101,19 @@ public:
         }
     }
 
-    Point updateMasterLocation(){
-        Point point(master.getLocation());
-        logger->info("got new location {}, {}", point.longitude, point.latitude);
-        masterLocationHistory.push_back(point);
-        return point;
+    vector<Point> getFullMasterPath(){
+        return masterLocationHistory;
     }
 
-    vector<Point> getMasterPath(){
-        return masterLocationHistory;
+    vector<SlaveInterface>& getSlaves(){
+        return slaves;
+    }
+
+    vector<Point> getSlaveToMasterPath(string slaveId){
+        validateSlaveId(slaveId);
+        for (auto slave: slaves){
+            return slave.getCurrentPathToMaster();
+        }
     }
 
 private:
@@ -117,27 +122,12 @@ private:
     MasterInterface master;
     vector<SlaveInterface> slaves;
     vector<Point> masterLocationHistory;
-    unordered_map<
-        string,
-        vector<Point>
-    > trips;
-
     thread getMasterLocationThread;
 
     void commonInit(){
         state = State::INIT;
         logger->info("Initialized Trip {}", number);
     }
-
-    // static void theMasterLocationThread(Trip* trip){
-    //     trip->logger->info("started runMasterLocationThread", trip->number);
-
-    //     while(trip->state == State::IN_PROGRESS){
-    //         trip->updateMasterLocation();
-    //         this_thread::sleep_for(chrono::seconds(1));
-    //     }
-    //     trip->logger->info("ended runMasterLocationThread", trip->number);
-    // }
 
 };
 

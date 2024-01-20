@@ -1,7 +1,7 @@
 #include <iostream> 
 #include "point.h"
 
-Point::~Point() {
-    // Destructor implementation
-    // (If there are any resources to be released, this is the place to do it)
-}
+Point::Point():
+    longitude(0.0),
+    latitude(0.0)
+    {}
