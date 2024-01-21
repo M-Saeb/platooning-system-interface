@@ -1,0 +1,9 @@
+To setup the project:
+```
+mkdir build
+cd build
+cmake -G "Visual Studio 17 2022" -DCMAKE_CUDA_FLAGS="-arch=sm_50" -T cuda="C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.3" -S . -B ./build
+
+-S <path-to-source> -B <path-to-build>
+```
+
