@@ -30,6 +30,14 @@ int main() {
         server.logger->info("===> Item is  {}", p.toString());
     }
     this_thread::sleep_for(chrono::seconds(1));
+    bool emergencySignal = server.getEmergencySignalForTrip(tripNumber);
+    server.logger->info("emergencySignal {}", emergencySignal);
+    server.turnOnEmergencySignalForTrip(tripNumber);
+    emergencySignal = server.getEmergencySignalForTrip(tripNumber);
+    server.logger->info("emergencySignal {}", emergencySignal);
+    server.turnOffEmergencySignalForTrip(tripNumber);
+    emergencySignal = server.getEmergencySignalForTrip(tripNumber);
+    server.logger->info("emergencySignal {}", emergencySignal);
     server.endTrip(tripNumber);
     return 0; 
 }

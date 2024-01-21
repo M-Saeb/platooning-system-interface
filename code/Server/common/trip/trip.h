@@ -116,6 +116,20 @@ public:
         logger->error("No slave id {} was found", slaveId);
     }
 
+    void turnOnEmergencySignal(){
+        emergencySignalIsON = true;
+        logger->info("Emergency Signal is ON");
+    }
+
+    void turnOffEmergencySignal(){
+        emergencySignalIsON = false;
+        logger->info("Emergency Signal is OFF");
+    }
+
+    bool getEmergencySignal(){
+        return emergencySignalIsON;
+    }
+
 private:
     State state;
     string number;
@@ -123,6 +137,7 @@ private:
     vector<SlaveInterface> slaves;
     vector<Point> masterLocationHistory;
     thread getMasterLocationThread;
+    bool emergencySignalIsON = false;
 
     void commonInit(){
         state = State::INIT;

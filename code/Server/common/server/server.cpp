@@ -66,3 +66,18 @@ vector<Point> Server::getSlaveToMasterLocation(
     trip->validateMasterId(masterId);
     return trip->getSlaveToMasterPath(slaveId);
 }
+
+void Server::turnOnEmergencySignalForTrip(string tripNumber){
+    auto trip = trips[tripNumber].get();
+    trip->turnOnEmergencySignal();
+}
+
+void Server::turnOffEmergencySignalForTrip(string tripNumber){
+    auto trip = trips[tripNumber].get();
+    trip->turnOffEmergencySignal();
+}
+
+bool Server::getEmergencySignalForTrip(string tripNumber){
+    auto trip = trips[tripNumber].get();
+    return trip->getEmergencySignal();
+}

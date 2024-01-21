@@ -33,6 +33,9 @@ public:
     void receiveEndTripSignal(string tripNumber);
     void updateMasterLocation(string tripNumber, string masterId, Point p);
     vector<Point> getSlaveToMasterLocation(string tripNumber, string masterId, string slaveId);
+    void turnOnEmergencySignalForTrip(string tripNumber);
+    void turnOffEmergencySignalForTrip(string tripNumber);
+    bool getEmergencySignalForTrip(string tripNumber);
 
 private:
     unordered_map<string, unique_ptr<Trip>> trips;
