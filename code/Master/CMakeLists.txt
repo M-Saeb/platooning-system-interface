@@ -1,6 +1,11 @@
-cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project(cmake_and_cuda LANGUAGES CXX CUDA)
  
+
+# Configuring VCPKG
+set(CMAKE_TOOLCHAIN_FILE "C:\\Users\\Moham\\vcpkg\\scripts\\buildsystems\\vcpkg.cmake"
+    CACHE STRING "Vcpkg toolchain file")
+
 include(CTest)
  
 # add_library(particles STATIC
@@ -41,3 +46,8 @@ if(APPLE)
                PROPERTY
                BUILD_RPATH ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 endif()
+
+
+# # spdlog
+# find_package(spdlog CONFIG REQUIRED)
+# target_link_libraries(my_executable PRIVATE spdlog::spdlog)

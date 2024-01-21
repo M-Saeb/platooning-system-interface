@@ -42,7 +42,6 @@ public:
         number(other.number),
         master(other.master),
         slaves(other.slaves),
-        masterLocationHistory(other.masterLocationHistory),
         AbstractLogger(other.number){
         }
 
@@ -51,7 +50,6 @@ public:
         number = other.number;
         master = other.master;
         slaves = other.slaves;
-        masterLocationHistory = other.masterLocationHistory;
         return *this;
     }
 
@@ -100,10 +98,6 @@ public:
         }
     }
 
-    vector<Point> getFullMasterPath(){
-        return masterLocationHistory;
-    }
-
     vector<SlaveInterface>& getSlaves(){
         return slaves;
     }
@@ -135,8 +129,6 @@ private:
     string number;
     shared_ptr<MasterInterface> master;
     vector<SlaveInterface> slaves;
-    vector<Point> masterLocationHistory;
-    thread getMasterLocationThread;
     bool emergencySignalIsON = false;
 
     void commonInit(){

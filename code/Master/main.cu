@@ -120,6 +120,7 @@ int main() {
 
         // Example: Display the number of slaves
         std::cout << "Number of Slaves: " << numSlaves << std::endl;
+        std::cout << "hahah: " << numSlaves << std::endl;
     }
 
     return 0;
