@@ -19,11 +19,11 @@ int main() {
     server.updateMasterLocation(
         tripNumber, masterId, Point(11.11, 22.22)
     );
-    server.updateMasterLocation(
-        tripNumber, masterId, Point(33.33, 44.44)
+    server.updateSlaveLocation(
+        tripNumber, slaveId1, Point(11.11, 22.22)
     );
     vector<Point> path = server.getSlaveToMasterLocation(
-        tripNumber, masterId, slaveId1
+        tripNumber, slaveId1
     );
     server.logger->info("Size is {}", path.size());
     for (auto p: path){

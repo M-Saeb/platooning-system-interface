@@ -29,10 +29,9 @@ public:
     void linkSlaveToTrip(string tripNumber, string slaveId);
     void startTrip(string tripNumber);
     void endTrip(string tripNumber);
-    void sendStopSignalToMaster(string tripNumber);    
-    void receiveEndTripSignal(string tripNumber);
     void updateMasterLocation(string tripNumber, string masterId, Point p);
-    vector<Point> getSlaveToMasterLocation(string tripNumber, string masterId, string slaveId);
+    void updateSlaveLocation(string tripNumber, string slaveId, Point p);
+    vector<Point> getSlaveToMasterLocation(string tripNumber, string slaveId);
     void turnOnEmergencySignalForTrip(string tripNumber);
     void turnOffEmergencySignalForTrip(string tripNumber);
     bool getEmergencySignalForTrip(string tripNumber);

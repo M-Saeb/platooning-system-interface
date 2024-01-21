@@ -23,7 +23,7 @@ void SlaveInterface::slaveToMasterThread() {
             addPointToPath(currentMasterLocation);
         }
         if (getSlaveLocation() != currentSlaveLocation) {
-            logger->info("Detected new slave location");
+            logger->info("--> Detected new slave location <--");
             currentSlaveLocation = getSlaveLocation();
             popPointFromPath();
         }

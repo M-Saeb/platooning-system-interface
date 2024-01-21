@@ -36,19 +36,6 @@ void Server::endTrip(string tripNumber){
     trip->endTrip();
 }
 
-void Server::sendStopSignalToMaster(string tripNumber){
-    auto trip = trips[tripNumber].get();
-    logger->info("Received stop signal for trip {}", tripNumber);
-    // trip->sendStopSignalToMaster();
-}
-
-void Server::receiveEndTripSignal(string tripNumber){
-    logger->info("Received end trip signal for trip {}", tripNumber);
-    auto trip = trips[tripNumber].get();
-    trip->endTrip();
-    logger->info("Trip {} ended", tripNumber);
-
-}
 
 void Server::updateMasterLocation(
     string tripNumber, string masterId, Point p
@@ -59,11 +46,23 @@ void Server::updateMasterLocation(
     master.setLocation(p);
 }
 
-vector<Point> Server::getSlaveToMasterLocation(
-    string tripNumber, string masterId, string slaveId
+void Server::updateSlaveLocation(
+    string tripNumber, string slaveId, Point p
 ){
     auto trip = trips[tripNumber].get();
-    trip->validateMasterId(masterId);
+    for(auto& slave: trip->getSlaves()){
+        if (slave.getNumber() == slaveId){
+            slave.updateSlaveLocation(p);
+            return;
+        }
+    }
+    logger->error("No slave with ID {} was found", slaveId);
+}
+
+vector<Point> Server::getSlaveToMasterLocation(
+    string tripNumber, string slaveId
+){
+    auto trip = trips[tripNumber].get();
     return trip->getSlaveToMasterPath(slaveId);
 }
 
